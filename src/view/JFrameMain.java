@@ -39,14 +39,6 @@ public class JFrameMain extends JFrame implements ActionListener {
 		jPanelMain.showMenu();
 	}
 
-	public void show1D() {
-		jPanelMain.show1D();
-	}
-
-	public void remove1D() {
-		jPanelMain.remove1D();
-	}
-
 	public void showGraphics(Object[] data) {
 		jPanelMain.showGraphics(data);
 	}

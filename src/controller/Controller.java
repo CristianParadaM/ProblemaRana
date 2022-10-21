@@ -31,14 +31,12 @@ public class Controller implements MouseListener {
 	public void mouseClicked(MouseEvent e) {
 		if (e.getComponent().getName() == "start") {
 
-			double[][] positions = new Congruencial(e.getX() % 2 != 0 ? e.getX() + 1 : e.getX(),
-					e.getY() % 2 == 0 ? e.getY() + 1 : e.getY(), 20).calculatePositions();
-
 			Congruencial congruencial = new Congruencial(e.getX() % 2 != 0 ? e.getX() + 1 : e.getX(),
 					e.getY() % 2 == 0 ? e.getY() + 1 : e.getY(), 20);
 
-			view.showGraphics(
-					new Object[] { positions, congruencial.calculatePositions2D(), congruencial.getNumberOfJumps() });
+			view.showGraphics(new Object[] { congruencial.calculatePositions(), 
+					congruencial.calculatePositions2D(),congruencial.getNumberOfJumps(), 
+					congruencial.calculatePositions3D(),congruencial.getNumberOfJumps3D() });
 
 		}
 	}

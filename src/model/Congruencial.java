@@ -8,6 +8,7 @@ public class Congruencial {
 	private int g;
 	private int t;
 	private int numberOfJumps;
+	private int numberOfJumps3D;
 
 	public Congruencial(int k, int c, int g) {
 		this.k = k;
@@ -42,6 +43,13 @@ public class Congruencial {
 	 */
 	public int getNumberOfJumps() {
 		return numberOfJumps;
+	}
+
+	/**
+	 * @return the numberOfJumps3D
+	 */
+	public int getNumberOfJumps3D() {
+		return numberOfJumps3D;
 	}
 
 	private ArrayList<Object[]> generateTable(int a, int c, int m) {
@@ -104,9 +112,38 @@ public class Congruencial {
 		}
 		return aux;
 	}
-//
-//	public double[] calculatePositions3D() {
-//		(45,23,17)
-//	}
+
+	public Object[] calculatePositions3D() {
+		double[] ri = getRi();
+
+		double[] arrayX = new double[1000000];
+		double[] arrayY = new double[1000000];
+		double[] arrayZ = new double[1000000];
+
+		numberOfJumps3D = 0;
+		int x = 0, y = 0, z = 0;
+		for (int i = 0; i < 1000000; i++) {
+			if (ri[i] < 0.166) {
+				arrayX[i] = ++x;
+			} else if (ri[i] < 0.332) {
+				arrayX[i] = --x;
+			} else if (ri[i] < 0.498) {
+				arrayY[i] = ++y;
+			} else if (ri[i] < 0.664) {
+				arrayY[i] = --y;
+			} else if (ri[i] < 0.83) {
+				arrayZ[i] = ++z;
+			} else {
+				arrayZ[i] = --z;
+			}
+			if ((x == 45) && (y == 23) && (z == 17)) {
+				numberOfJumps3D = i;
+				break;
+			}
+
+		}
+		return new Object[] { arrayX, arrayY, arrayZ };
+
+	}
 
 }

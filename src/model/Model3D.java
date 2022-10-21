@@ -6,7 +6,6 @@ package model;
 import javax.swing.JFrame;
 
 import org.math.plot.Plot3DPanel;
-import org.math.plot.canvas.Plot3DCanvas;
 
 /**
  * Clase que representa
@@ -16,11 +15,12 @@ import org.math.plot.canvas.Plot3DCanvas;
 public class Model3D {
 
 	public static void main(String[] args) {
-		double[] x = new double[] { 1, 2, 3, 4, 5, 6 };
-		double[] y = new double[] { 1, 2, 3, 4, 5, 6 };
-		double[] z = new double[] { 1, 2, 3, 4, 5, 6 };
+		double[] x = new double[] { 1, 80, 3, 14, 58, 69 };
+		double[] y = new double[] { 91, 21, 387, 41, 5, 16 };
+		double[] z = new double[] { 11, 27, 43, 64, 55, 6 };
 		Plot3DPanel panel = new Plot3DPanel("NORTH");
 		panel.addLinePlot("", x, y, z);
+		
 		JFrame frame = new JFrame();
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

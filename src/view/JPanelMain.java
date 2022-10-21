@@ -2,13 +2,16 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
+import java.util.Iterator;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -18,6 +21,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.DefaultXYDataset;
+import org.math.plot.Plot3DPanel;
+
 import controller.Controller;
 import view.utils.Constants;
 
@@ -41,12 +46,14 @@ public class JPanelMain extends JPanel {
 	private JLabel jLabelResult;
 	private JFreeChart jFreeChartxy;
 	private JFreeChart jFreeChartxy2D;
+	private Plot3DPanel plot3DPanelxyz3D;
 	private Object[] data;
 	private int index;
 
 	public JPanelMain() {
 		super(new BorderLayout());
 		this.index = 0;
+		this.plot3DPanelxyz3D = new Plot3DPanel("NORTH");
 		this.background = new ImageIcon(getClass().getResource("/res/background.jpg"));
 		this.jLabelTitle = new JLabel("Caminatas Aleatorias: El problema de la Rana", JLabel.CENTER);
 		this.jLabelAutors = new JLabel("", JLabel.CENTER);
@@ -159,11 +166,12 @@ public class JPanelMain extends JPanel {
 		super.paint(g);
 	}
 
-	private void removeComponents() {
-		for (int i = 0; i < this.getComponentCount(); i++) {
-			this.getComponent(i).setVisible(false);
+	private void removeComponents(Container component) {
+		for (int i = 0; i < component.getComponentCount(); i++) {
+			component.getComponent(i).setVisible(false);
 		}
-		this.removeAll();
+		component.removeAll();
+
 	}
 
 	public void changeView(int value) {
@@ -179,19 +187,22 @@ public class JPanelMain extends JPanel {
 			showPositions2D();
 			break;
 		case 3:
-
+			showPositions3D();
 			break;
 		}
 		this.updateUI();
 	}
 
 	public void showPositions() {
-		removeComponents();
+		removeComponents(this);
+		removeComponents(jPanelContainerGraph);
+		this.jLabelGraph.setVisible(true);
+		this.jPanelContainerGraph.setVisible(true);
+		this.jLabelResult.setVisible(true);
 		this.jPanelContainerButtonBack.setVisible(true);
 		this.jLabelAutors.setVisible(true);
 		this.jButtonGo.setVisible(true);
 		this.jButtonGoBack.setVisible(true);
-		this.jPanelContainerGraph.setVisible(true);
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.weightx = 1;
 		this.jLabelGraph.setIcon(new ImageIcon(jFreeChartxy.createBufferedImage(1100 * JFrameMain.WIDTH_SCREEN / 1920,
@@ -215,7 +226,10 @@ public class JPanelMain extends JPanel {
 	}
 
 	public void showPositions2D() {
-		removeComponents();
+		removeComponents(this);
+		removeComponents(jPanelContainerGraph);
+		this.jLabelGraph.setVisible(true);
+		this.jLabelResult.setVisible(true);
 		this.jPanelContainerButtonBack.setVisible(true);
 		this.jLabelAutors.setVisible(true);
 		this.jButtonGo.setVisible(true);
@@ -227,6 +241,35 @@ public class JPanelMain extends JPanel {
 				600 * JFrameMain.HEIGHT_SCREEN / 1080)));
 		this.jLabelResult.setText("La rana llegó a la posicion después de: " + data[2] + " saltos");
 		this.jPanelContainerGraph.add(jLabelGraph, gbc);
+		gbc.fill = 1;
+		gbc.gridy = 1;
+		this.jPanelContainerGraph.add(jLabelResult, gbc);
+		gbc.gridy = 0;
+		gbc.fill = 0;
+		gbc.weighty = 1;
+		this.jPanelContainerButtonBack.add(jButtonBack, gbc);
+
+		this.add(jPanelContainerButtonBack, BorderLayout.NORTH);
+		this.add(jPanelContainerGraph, BorderLayout.CENTER);
+		this.add(jLabelAutors, BorderLayout.SOUTH);
+		this.add(jButtonGo, BorderLayout.LINE_END);
+		this.add(jButtonGoBack, BorderLayout.LINE_START);
+	}
+
+	private void showPositions3D() {
+		removeComponents(this);
+		removeComponents(jPanelContainerGraph);
+		this.jPanelContainerGraph.setVisible(true);
+		this.jLabelResult.setVisible(true);
+		this.jPanelContainerButtonBack.setVisible(true);
+		this.jLabelAutors.setVisible(true);
+		this.jButtonGo.setVisible(true);
+		this.jButtonGoBack.setVisible(true);
+		this.plot3DPanelxyz3D.setVisible(true);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.weightx = 1;
+		this.jLabelResult.setText("La rana llegó a la posicion después de: " + data[4] + " saltos");
+		this.jPanelContainerGraph.add(plot3DPanelxyz3D, gbc);
 		gbc.fill = 1;
 		gbc.gridy = 1;
 		this.jPanelContainerGraph.add(jLabelResult, gbc);
@@ -259,41 +302,27 @@ public class JPanelMain extends JPanel {
 
 	}
 
+	private void generateGraph3D() {
+		double[] x = ((double[]) ((Object[]) data[3])[0]);
+		double[] y = ((double[]) ((Object[]) data[3])[1]);
+		double[] z = ((double[]) ((Object[]) data[3])[2]);
+
+		plot3DPanelxyz3D.addLinePlot("", x, y, z);
+
+	}
+
 	private void fillDataSet(DefaultXYDataset dataset, double[][] positions) {
 		dataset.addSeries("", positions);
 	}
 
 	public void showMenu() {
-		removeComponents();
+		removeComponents(this);
 		this.jLabelTitle.setVisible(true);
 		this.jPanelContainerButton.setVisible(true);
 		this.jLabelAutors.setVisible(true);
 		this.add(jLabelTitle, BorderLayout.NORTH);
 		this.add(jPanelContainerButton, BorderLayout.CENTER);
 		this.add(jLabelAutors, BorderLayout.SOUTH);
-	}
-
-	public void remove1D() {
-		this.jPanelContainerButtonBack.setVisible(false);
-		this.jLabelAutors.setVisible(false);
-		this.jPanelContainerGraph.setVisible(false);
-		this.jLabelGraph.setVisible(false);
-		this.jLabelResult.setVisible(false);
-
-	}
-
-	public void show1D() {
-		this.jPanelContainerButtonBack.setVisible(true);
-		this.jLabelAutors.setVisible(true);
-		this.jPanelContainerGraph.setVisible(true);
-		this.jLabelGraph.setVisible(true);
-		this.jLabelResult.setVisible(true);
-
-	}
-
-	public void remove2D() {
-		removeComponents();
-
 	}
 
 	/**
@@ -303,6 +332,7 @@ public class JPanelMain extends JPanel {
 		this.data = data;
 		generateGraph();
 		generateGraph2D();
+		generateGraph3D();
 		goNext();
 	}
 
