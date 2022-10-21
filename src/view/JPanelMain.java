@@ -23,6 +23,10 @@ import view.utils.Constants;
 
 public class JPanelMain extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ImageIcon background;
 	private JLabel jLabelTitle;
 	private JLabel jLabelAutors;
@@ -32,30 +36,50 @@ public class JPanelMain extends JPanel {
 	private JPanel jPanelContainerGraph;
 	private JButton jButtonStart;
 	private JButton jButtonBack;
+	private JButton jButtonGo;
+	private JButton jButtonGoBack;
 	private JLabel jLabelResult;
+	private JFreeChart jFreeChartxy;
+	private JFreeChart jFreeChartxy2D;
+	private Object[] data;
+	private int index;
 
 	public JPanelMain() {
 		super(new BorderLayout());
+		this.index = 0;
 		this.background = new ImageIcon(getClass().getResource("/res/background.jpg"));
 		this.jLabelTitle = new JLabel("Caminatas Aleatorias: El problema de la Rana", JLabel.CENTER);
 		this.jLabelAutors = new JLabel("", JLabel.CENTER);
 		this.jPanelContainerButton = new JPanel(new GridBagLayout());
 		this.jPanelContainerButtonBack = new JPanel(new GridBagLayout());
+		this.jLabelGraph = new JLabel();
 		this.jButtonStart = new JButton(new ImageIcon(new ImageIcon(getClass().getResource("/res/btnrana.png"))
 				.getImage().getScaledInstance(450 * JFrameMain.WIDTH_SCREEN / 1920,
 						450 * JFrameMain.HEIGHT_SCREEN / 1080, Image.SCALE_SMOOTH)));
 		this.jButtonBack = new JButton(new ImageIcon(new ImageIcon(getClass().getResource("/res/btnback.png"))
 				.getImage().getScaledInstance(50 * JFrameMain.WIDTH_SCREEN / 1920, 30 * JFrameMain.HEIGHT_SCREEN / 1080,
 						Image.SCALE_SMOOTH)));
+		this.jButtonGo = new JButton(new ImageIcon(new ImageIcon(getClass().getResource("/res/btnGo.png")).getImage()
+				.getScaledInstance(50 * JFrameMain.WIDTH_SCREEN / 1920, 30 * JFrameMain.HEIGHT_SCREEN / 1080,
+						Image.SCALE_SMOOTH)));
+		this.jButtonGoBack = new JButton(new ImageIcon(new ImageIcon(getClass().getResource("/res/btn1D.png"))
+				.getImage().getScaledInstance(50 * JFrameMain.WIDTH_SCREEN / 1920, 30 * JFrameMain.HEIGHT_SCREEN / 1080,
+						Image.SCALE_SMOOTH)));
 		this.jLabelResult = new JLabel("", JLabel.CENTER);
+
+		this.jPanelContainerGraph = new JPanel(new GridBagLayout());
+
 		init();
 	}
 
 	private void init() {
 		this.setOpaque(false);
+		this.jPanelContainerGraph.setOpaque(false);
 		this.jPanelContainerButton.setOpaque(false);
 		this.jPanelContainerButtonBack.setOpaque(false);
-		this.jButtonBack.setName("back");
+		this.jButtonBack.setActionCommand("back");
+		this.jButtonGo.setActionCommand("goAhead");
+		this.jButtonGoBack.setActionCommand("goBack");
 		this.jButtonStart.setName("start");
 		addComponents();
 		animate();
@@ -85,22 +109,37 @@ public class JPanelMain extends JPanel {
 		configureLabels(jLabelResult, Constants.FONT_APP, Constants.FONT_SIZE_TEXT, Font.PLAIN, false);
 		configureButton(jButtonStart);
 		configureButton(jButtonBack);
+		configureButton(jButtonGo);
+		configureButton(jButtonGoBack);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		jPanelContainerButton.add(jButtonStart, gbc);
 
-		this.add(jLabelTitle, BorderLayout.NORTH);
-		this.add(jPanelContainerButton, BorderLayout.CENTER);
-		this.add(jLabelAutors, BorderLayout.SOUTH);
+		changeView(0);
+
+	}
+
+	public void goNext() {
+		index = (++index) == 4 ? 1 : index;
+		changeView(index);
+	}
+
+	public void goBack() {
+		index = (--index) == 0 ? 3 : index;
+		changeView(index);
 	}
 
 	private void configureButton(JButton jButton) {
 		jButton.setContentAreaFilled(false);
 		jButton.setBorderPainted(false);
 		jButton.setFocusPainted(false);
-		jButton.addMouseListener(Controller.getInstance());
+		if (jButton.getName() == "start") {
+			jButton.addMouseListener(Controller.getInstance());
+		} else {
+			jButton.addActionListener(JFrameMain.getInstance());
+		}
 	}
 
 	private void configureLabels(JLabel jLabel, String fontApp, int fontSize, int style, boolean border) {
@@ -127,38 +166,98 @@ public class JPanelMain extends JPanel {
 		this.removeAll();
 	}
 
-	public void showPositions(double[][] positions) {
+	public void changeView(int value) {
+
+		switch (value) {
+		case 0:
+			showMenu();
+			break;
+		case 1:
+			showPositions();
+			break;
+		case 2:
+			showPositions2D();
+			break;
+		case 3:
+
+			break;
+		}
+		this.updateUI();
+	}
+
+	public void showPositions() {
 		removeComponents();
 		this.jPanelContainerButtonBack.setVisible(true);
 		this.jLabelAutors.setVisible(true);
-		this.jPanelContainerGraph = new JPanel(new GridBagLayout());
-		this.jPanelContainerGraph.setOpaque(false);
+		this.jButtonGo.setVisible(true);
+		this.jButtonGoBack.setVisible(true);
+		this.jPanelContainerGraph.setVisible(true);
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.weightx = 1;
-		generateGraph(positions);
+		this.jLabelGraph.setIcon(new ImageIcon(jFreeChartxy.createBufferedImage(1100 * JFrameMain.WIDTH_SCREEN / 1920,
+				600 * JFrameMain.HEIGHT_SCREEN / 1080)));
+		this.jLabelResult.setText(
+				"La posicion final de la rana en 1.000.000 de saltos es: " + (int)((double[][]) data[0])[1][999999]);
 		this.jPanelContainerGraph.add(jLabelGraph, gbc);
-		gbc.fill =1;
+		gbc.fill = 1;
 		gbc.gridy = 1;
 		this.jPanelContainerGraph.add(jLabelResult, gbc);
 		gbc.gridy = 0;
-		gbc.fill =0;
+		gbc.fill = 0;
 		gbc.weighty = 1;
 		this.jPanelContainerButtonBack.add(jButtonBack, gbc);
 
 		this.add(jPanelContainerButtonBack, BorderLayout.NORTH);
 		this.add(jPanelContainerGraph, BorderLayout.CENTER);
 		this.add(jLabelAutors, BorderLayout.SOUTH);
+		this.add(jButtonGo, BorderLayout.LINE_END);
+		this.add(jButtonGoBack, BorderLayout.LINE_START);
 	}
 
-	private void generateGraph(double[][] positions) {
+	public void showPositions2D() {
+		removeComponents();
+		this.jPanelContainerButtonBack.setVisible(true);
+		this.jLabelAutors.setVisible(true);
+		this.jButtonGo.setVisible(true);
+		this.jButtonGoBack.setVisible(true);
+		this.jPanelContainerGraph.setVisible(true);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.weightx = 1;
+		this.jLabelGraph.setIcon(new ImageIcon(jFreeChartxy2D.createBufferedImage(1100 * JFrameMain.WIDTH_SCREEN / 1920,
+				600 * JFrameMain.HEIGHT_SCREEN / 1080)));
+		this.jLabelResult.setText("La posicion final de la rana en 1.000.000 de saltos es: " + "("
+				+ (int)((double[][]) data[1])[0][999999] + "," + (int)((double[][]) data[1])[1][999999] + ")");
+		this.jPanelContainerGraph.add(jLabelGraph, gbc);
+		gbc.fill = 1;
+		gbc.gridy = 1;
+		this.jPanelContainerGraph.add(jLabelResult, gbc);
+		gbc.gridy = 0;
+		gbc.fill = 0;
+		gbc.weighty = 1;
+		this.jPanelContainerButtonBack.add(jButtonBack, gbc);
+
+		this.add(jPanelContainerButtonBack, BorderLayout.NORTH);
+		this.add(jPanelContainerGraph, BorderLayout.CENTER);
+		this.add(jLabelAutors, BorderLayout.SOUTH);
+		this.add(jButtonGo, BorderLayout.LINE_END);
+		this.add(jButtonGoBack, BorderLayout.LINE_START);
+	}
+
+	private void generateGraph() {
+		double[][] positions = (double[][]) this.data[0];
 		DefaultXYDataset dataset = new DefaultXYDataset();
 		fillDataSet(dataset, positions);
-		JFreeChart jFreeChartxy = ChartFactory.createXYLineChart("", "", "", dataset, PlotOrientation.VERTICAL, true,
-				false, false);
-		BufferedImage img = jFreeChartxy.createBufferedImage(1200 * JFrameMain.WIDTH_SCREEN / 1920,
-				600 * JFrameMain.HEIGHT_SCREEN / 1080);
-		this.jLabelGraph = new JLabel(new ImageIcon(img));
-		this.jLabelResult.setText("La posicion final de la rana en 1.000.000 de saltos es: "+(int)positions[1][999999]);
+		jFreeChartxy = ChartFactory.createXYLineChart("", "", "", dataset, PlotOrientation.VERTICAL, true, false,
+				false);
+	}
+
+	private void generateGraph2D() {
+		double[][] positions = (double[][]) this.data[1];
+		DefaultXYDataset dataset = new DefaultXYDataset();
+		fillDataSet(dataset, positions);
+		jFreeChartxy2D = ChartFactory.createXYLineChart("", "", "", dataset, PlotOrientation.VERTICAL, true, false,
+				false);
+
 	}
 
 	private void fillDataSet(DefaultXYDataset dataset, double[][] positions) {
@@ -174,4 +273,38 @@ public class JPanelMain extends JPanel {
 		this.add(jPanelContainerButton, BorderLayout.CENTER);
 		this.add(jLabelAutors, BorderLayout.SOUTH);
 	}
+
+	public void remove1D() {
+		this.jPanelContainerButtonBack.setVisible(false);
+		this.jLabelAutors.setVisible(false);
+		this.jPanelContainerGraph.setVisible(false);
+		this.jLabelGraph.setVisible(false);
+		this.jLabelResult.setVisible(false);
+
+	}
+
+	public void show1D() {
+		this.jPanelContainerButtonBack.setVisible(true);
+		this.jLabelAutors.setVisible(true);
+		this.jPanelContainerGraph.setVisible(true);
+		this.jLabelGraph.setVisible(true);
+		this.jLabelResult.setVisible(true);
+
+	}
+
+	public void remove2D() {
+		removeComponents();
+
+	}
+
+	/**
+	 * @param data
+	 */
+	public void showGraphics(Object[] data) {
+		this.data = data;
+		generateGraph();
+		generateGraph2D();
+		goNext();
+	}
+
 }

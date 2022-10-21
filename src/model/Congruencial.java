@@ -38,7 +38,7 @@ public class Congruencial {
 
 	private ArrayList<Object[]> generateTable(int a, int c, int m) {
 		ArrayList<Object[]> table = new ArrayList<>();
-		double x_i = Math.abs(m-(c+a)-1);
+		double x_i = Math.abs(m - (c + a) - 1);
 		for (int i = 1; i <= (c != 0 ? m : m / 4); i++) {
 			Double[] row = new Double[3];
 			row[0] = (double) i;
@@ -67,4 +67,33 @@ public class Congruencial {
 		}
 		return aux;
 	}
+
+	public double[][] calculatePositions2D() {
+		double[] ri = getRi();
+		double[][] aux = new double[2][1000000];
+		int countX = 0;
+		int countY = 0;
+		for (int i = 0; i < 1000000; i++) {
+			if (ri[i] < 0.25) {
+				aux[0][i] = countX;
+				aux[1][i] = countY++;
+			} else if (ri[i] < 0.50 && ri[i] >= 0.25) {
+				aux[0][i] = countX;
+				aux[1][i] = countY--;
+			} else if (ri[i] < 0.75 && ri[i] >= 0.50) {
+				aux[0][i] = countX++;
+				aux[1][i] = countY;
+			} else {
+				aux[0][i] = countX--;
+				aux[1][i] = countY;
+
+			}
+		}
+		return aux;
+	}
+//
+//	public double[] calculatePositions3D() {
+//		
+//	}
+
 }
