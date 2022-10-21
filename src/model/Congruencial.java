@@ -7,6 +7,7 @@ public class Congruencial {
 	private int c;
 	private int g;
 	private int t;
+	private int numberOfJumps;
 
 	public Congruencial(int k, int c, int g) {
 		this.k = k;
@@ -34,6 +35,13 @@ public class Congruencial {
 			numbers[i] = (double) table.get(i)[2];
 		}
 		return numbers;
+	}
+
+	/**
+	 * @return the numberOfJumps
+	 */
+	public int getNumberOfJumps() {
+		return numberOfJumps;
 	}
 
 	private ArrayList<Object[]> generateTable(int a, int c, int m) {
@@ -73,27 +81,32 @@ public class Congruencial {
 		double[][] aux = new double[2][1000000];
 		int countX = 0;
 		int countY = 0;
+		numberOfJumps = 0;
 		for (int i = 0; i < 1000000; i++) {
 			if (ri[i] < 0.25) {
 				aux[0][i] = countX;
 				aux[1][i] = countY++;
-			} else if (ri[i] < 0.50 && ri[i] >= 0.25) {
+			} else if (ri[i] < 0.50) {
 				aux[0][i] = countX;
 				aux[1][i] = countY--;
-			} else if (ri[i] < 0.75 && ri[i] >= 0.50) {
+			} else if (ri[i] < 0.75) {
 				aux[0][i] = countX++;
 				aux[1][i] = countY;
 			} else {
 				aux[0][i] = countX--;
 				aux[1][i] = countY;
-
 			}
+			if (countX == 250 && countY == 300) {
+				numberOfJumps = i;
+				break;
+			}
+
 		}
 		return aux;
 	}
 //
 //	public double[] calculatePositions3D() {
-//		
+//		(45,23,17)
 //	}
 
 }

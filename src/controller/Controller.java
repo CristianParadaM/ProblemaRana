@@ -30,13 +30,15 @@ public class Controller implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (e.getComponent().getName() == "start") {
+
 			double[][] positions = new Congruencial(e.getX() % 2 != 0 ? e.getX() + 1 : e.getX(),
 					e.getY() % 2 == 0 ? e.getY() + 1 : e.getY(), 20).calculatePositions();
 
-			double[][] positions2D = new Congruencial(e.getX() % 2 != 0 ? e.getX() + 1 : e.getX(),
-					e.getY() % 2 == 0 ? e.getY() + 1 : e.getY(), 20).calculatePositions2D();
+			Congruencial congruencial = new Congruencial(e.getX() % 2 != 0 ? e.getX() + 1 : e.getX(),
+					e.getY() % 2 == 0 ? e.getY() + 1 : e.getY(), 20);
 
-			view.showGraphics(new Object[] { positions, positions2D });
+			view.showGraphics(
+					new Object[] { positions, congruencial.calculatePositions2D(), congruencial.getNumberOfJumps() });
 
 		}
 	}

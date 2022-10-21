@@ -197,7 +197,7 @@ public class JPanelMain extends JPanel {
 		this.jLabelGraph.setIcon(new ImageIcon(jFreeChartxy.createBufferedImage(1100 * JFrameMain.WIDTH_SCREEN / 1920,
 				600 * JFrameMain.HEIGHT_SCREEN / 1080)));
 		this.jLabelResult.setText(
-				"La posicion final de la rana en 1.000.000 de saltos es: " + (int)((double[][]) data[0])[1][999999]);
+				"La posicion final de la rana en 1.000.000 de saltos es: " + (int) ((double[][]) data[0])[1][999999]);
 		this.jPanelContainerGraph.add(jLabelGraph, gbc);
 		gbc.fill = 1;
 		gbc.gridy = 1;
@@ -225,8 +225,7 @@ public class JPanelMain extends JPanel {
 		gbc.weightx = 1;
 		this.jLabelGraph.setIcon(new ImageIcon(jFreeChartxy2D.createBufferedImage(1100 * JFrameMain.WIDTH_SCREEN / 1920,
 				600 * JFrameMain.HEIGHT_SCREEN / 1080)));
-		this.jLabelResult.setText("La posicion final de la rana en 1.000.000 de saltos es: " + "("
-				+ (int)((double[][]) data[1])[0][999999] + "," + (int)((double[][]) data[1])[1][999999] + ")");
+		this.jLabelResult.setText("La rana llegó a la posicion después de: " + data[2] + " saltos");
 		this.jPanelContainerGraph.add(jLabelGraph, gbc);
 		gbc.fill = 1;
 		gbc.gridy = 1;
